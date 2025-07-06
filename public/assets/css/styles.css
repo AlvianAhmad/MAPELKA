@@ -1,0 +1,90 @@
+/* Tombol play tengah */
+
+.plyr__control--overlaid {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.plyr__control--overlaid::before {
+  content: "";
+  display: block;
+  width: 14vw;
+  max-width: 70px;
+  height: 14vw;
+  max-height: 70px;
+  background-image: url("assets/images/icons/play-button.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Responsive ukuran tombol play */
+@media (max-width: 834px) {
+  .plyr__control--overlaid::before {
+    width: 12vw;
+    max-width: 60px;
+    height: 12vw;
+    max-height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .plyr__control--overlaid::before {
+    width: 16vw;
+    max-width: 50px;
+    height: 16vw;
+    max-height: 50px;
+  }
+}
+
+.plyr button[data-plyr="play"] svg {
+  display: none;
+}
+
+/* VOLUME */
+
+.plyr__controls button[data-plyr="mute"]:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* FULLSCREEN */
+
+.plyr__controls button[data-plyr="fullscreen"]:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* POSTER VIDEO */
+
+.plyr__poster {
+  background-image: url("assets/images/thumbnails/mapelkathumbnail.png") !important;
+  background-size: cover !important;
+  background-position: center;
+}
+
+/* Responsif untuk kontainer video */
+
+.video-container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.video-container video {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* Responsive padding jika ingin ditambahkan */
+
+@media (max-width: 768px) {
+  .video-container {
+    padding: 0 16px;
+  }
+}

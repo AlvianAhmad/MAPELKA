@@ -63,12 +63,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| Pelatih Routes
-|--------------------------------------------------------------------------
-*/
-
 Route::middleware(['auth', 'role:pelatih'])->prefix('pelatih')->group(function () {
 
     // Dashboard

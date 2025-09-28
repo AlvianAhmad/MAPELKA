@@ -42,18 +42,22 @@ class MateriController extends Controller
 
         $request->validate($rules);
 
-        $thumbnailPath = $request->file('thumbnail')?->store('thumbnails', 'public');
-        $filePath      = $request->file('file')?->store('materis', 'public');
-        $videoPath     = $request->file('video_file')?->store('videos', 'public');
+        $materi = new Materi();
+        $materi->title       = $request->title;
+        $materi->description = $request->description;
+        $materi->user_id     = Auth::user()->role === 'admin' ? $request->user_id : Auth::id();
 
-        $materi = Materi::create([
-            'title'       => $request->title,
-            'description' => $request->description,
-            'thumbnail'   => $thumbnailPath,
-            'file'        => $filePath,
-            'video_file'  => $videoPath,
-            'user_id'     => Auth::user()->role === 'admin' ? $request->user_id : Auth::id(),
-        ]);
+        if ($request->hasFile('thumbnail')) {
+            $materi->thumbnail = $request->file('thumbnail')->store('thumbnails', 'public');
+        }
+        if ($request->hasFile('file')) {
+            $materi->file = $request->file('file')->store('materis', 'public');
+        }
+        if ($request->hasFile('video_file')) {
+            $materi->video_file = $request->file('video_file')->store('videos', 'public');
+        }
+
+        $materi->save();
 
         return response()->json($materi, 201);
     }
@@ -70,8 +74,7 @@ class MateriController extends Controller
             'description'  => 'required|string',
             'thumbnail'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'file'         => 'nullable|mimes:pdf,docx,doc,ppt,pptx|max:10240',
-            'video_file' => 'nullable|mimes:mp4,mov,avi,wmv|max:100000000' // 100 GB
-
+            'video_file'   => 'nullable|mimes:mp4,mov,avi,wmv|max:102400'
         ];
 
         if (Auth::user()->role === 'admin') {
@@ -80,6 +83,7 @@ class MateriController extends Controller
 
         $request->validate($rules);
 
+        // Update file jika ada
         if ($request->hasFile('thumbnail')) {
             if ($materi->thumbnail) {
                 Storage::disk('public')->delete($materi->thumbnail);
@@ -101,11 +105,15 @@ class MateriController extends Controller
             $materi->video_file = $request->file('video_file')->store('videos', 'public');
         }
 
-        $materi->update([
-            'title'       => $request->title,
-            'description' => $request->description,
-            'user_id'     => Auth::user()->role === 'admin' ? $request->user_id : $materi->user_id,
-        ]);
+        // Update data lain
+        $materi->title       = $request->title;
+        $materi->description = $request->description;
+
+        if (Auth::user()->role === 'admin') {
+            $materi->user_id = $request->user_id;
+        }
+
+        $materi->save();
 
         return response()->json($materi);
     }
@@ -125,17 +133,23 @@ class MateriController extends Controller
 
         $materi->delete();
 
-        return response()->json(['message' => 'Materi deleted successfully']);
+        return response()->json(['message' => 'Materi berhasil dihapus.']);
     }
 
-    // Tampilkan 5 materi terbaru
+    // Tampilkan materi by ID
     public function show(Materi $materi)
     {
-        $materis = Materi::with('user')->latest()->take(5)->get();
         return response()->json($materi->load('user'));
     }
 
-    // Tampilkan detail materi (view)
+    // Tampilkan 5 materi terbaru
+    public function latestMateris()
+    {
+        $materis = Materi::with('user')->latest()->take(5)->get();
+        return response()->json($materis);
+    }
+
+    // Tampilkan view detail materi (opsional)
     public function apishow(Materi $materi)
     {
         return view('materi.show', compact('materi'));
